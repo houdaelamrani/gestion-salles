@@ -1,4 +1,3 @@
-
 package com.example.jpa.entities;
 
 import javax.persistence.Entity;
@@ -8,9 +7,13 @@ import javax.persistence.Id;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
+import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
-public class Utilisateur {
+public class Utilisateur implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +32,11 @@ public class Utilisateur {
     public Utilisateur() {
     }
 
+    public Utilisateur(String nom, String email) {
+        this.nom = nom;
+        this.email = email;
+    }
+
     public Utilisateur(String nom, String email, Salle salle) {
         this.nom = nom;
         this.email = email;
@@ -37,6 +45,10 @@ public class Utilisateur {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNom() {
@@ -61,6 +73,19 @@ public class Utilisateur {
 
     public void setSalle(Salle salle) {
         this.salle = salle;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Utilisateur that = (Utilisateur) o;
+        return Objects.equals(email, that.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 
     @Override

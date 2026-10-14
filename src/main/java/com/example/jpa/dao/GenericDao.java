@@ -1,4 +1,3 @@
-
 package com.example.jpa.dao;
 
 import javax.persistence.EntityManager;
@@ -18,13 +17,12 @@ public class GenericDao<T> {
     // CREATE : ajouter une entité
     public void create(T entity) {
         EntityTransaction tx = em.getTransaction();
-
         try {
             tx.begin();
             em.persist(entity);
             tx.commit();
         } catch (RuntimeException e) {
-            if (tx.isActive()) {
+            if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
             throw e;
@@ -39,14 +37,13 @@ public class GenericDao<T> {
     // UPDATE : modifier une entité
     public T update(T entity) {
         EntityTransaction tx = em.getTransaction();
-
         try {
             tx.begin();
             T merged = em.merge(entity);
             tx.commit();
             return merged;
         } catch (RuntimeException e) {
-            if (tx.isActive()) {
+            if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
             throw e;
@@ -56,18 +53,34 @@ public class GenericDao<T> {
     // DELETE : supprimer une entité
     public void delete(T entity) {
         EntityTransaction tx = em.getTransaction();
-
         try {
             tx.begin();
-
-            T managed = em.contains(entity)
-                    ? entity
-                    : em.merge(entity);
-
+            T managed = em.contains(entity) ? entity : em.merge(entity);
             em.remove(managed);
             tx.commit();
         } catch (RuntimeException e) {
-            if (tx.isActive()) {
+            if (tx != null && tx.isActive()) {
+                tx.rollback();
+            }
+            throw e;
+        }
+    }
+
+    // DELETE BY ID : supprimer une entité par son identifiant
+    public boolean deleteById(Object id) {
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            T entity = em.find(entityClass, id);
+            if (entity != null) {
+                em.remove(entity);
+                tx.commit();
+                return true;
+            }
+            tx.commit();
+            return false;
+        } catch (RuntimeException e) {
+            if (tx != null && tx.isActive()) {
                 tx.rollback();
             }
             throw e;
@@ -80,5 +93,13 @@ public class GenericDao<T> {
                 "SELECT e FROM " + entityClass.getSimpleName() + " e",
                 entityClass
         ).getResultList();
+    }
+
+    // COUNT : compter le nombre total d'entités
+    public long count() {
+        return em.createQuery(
+                "SELECT COUNT(e) FROM " + entityClass.getSimpleName() + " e",
+                Long.class
+        ).getSingleResult();
     }
 }
