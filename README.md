@@ -14,14 +14,6 @@ Voici la capture d'écran de l'exécution complète du projet sous **Windows Pow
 
 ---
 
-## 🖥️ Interface Graphique (GUI)
-
-En complément du mode console, une interface moderne Swing permet la gestion interactive des salles et des utilisateurs :
-
-![Interface Graphique](screenshot_gui.png)
-
----
-
 ## 📋 Présentation du Projet
 
 Ce projet implémente un système complet de gestion de salles et d'utilisateurs en utilisant l'API standard **JPA (Java Persistence API)** avec **Hibernate** comme fournisseur d'ORM (Object-Relational Mapping).
